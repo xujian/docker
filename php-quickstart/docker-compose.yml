@@ -1,0 +1,21 @@
+version: '2'
+services:
+  nginx:
+    image: nginx:latest
+    container_name: quickstart-nginx
+    volumes:
+      - ./app:/var/www
+      - ./site.conf:/etc/nginx/conf.d/site.conf
+    links:
+      - php
+    environment:
+      - VIRTUAL_HOST=quickstart.breezemakes.com
+  php:
+    image: php:7-fpm
+    container_name: quickstart-php
+    volumes:
+      - ./app:/var/www
+networks:
+  default:
+    external: 
+      name: nginx-proxy-network

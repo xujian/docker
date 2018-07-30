@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  portainer:
+    image: portainer/portainer
+    container_name: portainer
+    ports:
+      - "9000:9000"
+    command: -H unix:///var/run/docker.sock
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    environment:
+      - VIRTUAL_PORT=9000
+      - VIRTUAL_HOST=portainer.breezemakes.com
+networks:
+  default:
+    external: 
+      name: nginx-proxy-network
+volumes:
+  portainer_data:

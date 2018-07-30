@@ -1,0 +1,48 @@
+version: '3.5'
+services:
+  app:
+    image: "aspendigital/octobercms:php7.2-apache"
+    container_name: octobercms-app
+    restart: always
+    ports:
+     - "8090:8090"
+    depends_on:
+      - mysql
+      - memcached
+      - redis
+    volumes:
+      - ./.env:/var/www/html/.env
+      - ./config/docker:/var/www/html/config/docker
+      - ./plugins:/var/www/html/plugins
+      - ./storage/app:/var/www/html/storage/app
+      - ./storage/logs:/var/www/html/storage/logs
+      - ./themes:/var/www/html/themes
+    environment:
+      - APP_URL=https://october.breezemakes.com
+      - DB_TYPE=mysql
+      - DB_HOST=mysql
+      - DB_DATABASE=october
+      - DB_USERNAME=root
+      - DB_PASSWORD=Mko0nji9
+      - TZ=China/Shanghai
+      - VIRTUAL_HOST=october.breezemakes.com
+  mysql:
+    image: "mariadb"
+    container_name: octobercms-mysql
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=Mko0nji9
+      - MYSQL_DATABASE=october
+    volumes:
+      - ./db:/var/lib/mysql
+  memcached:
+    image: "memcached"
+    container_name: octobercms-memcached
+  redis:
+    image: "redis"
+    container_name: octobercms-redis
+networks:
+  default:
+    external: 
+      name: nginx-proxy-network

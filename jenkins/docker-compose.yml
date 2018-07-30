@@ -1,0 +1,17 @@
+version: '3'
+services:
+  jenkins:
+    build: ./jenkins
+    container_name: jenkins
+    ports:
+      - '8088:8080'
+    volumes:
+      - ./home:/var/jenkins_home
+      - ./log:/var/log/jenkins
+    environment:
+      - VIRTUAL_PORT=8080
+      - VIRTUAL_HOST=jenkins.breezemakes.com
+networks:
+  default:
+    external: 
+      name: nginx-proxy-network

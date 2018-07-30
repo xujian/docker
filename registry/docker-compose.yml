@@ -1,0 +1,34 @@
+version: '3'
+services:
+  registry:
+    image: registry:2
+    container_name: registry
+    ports:
+      - 5000:5000
+    environment:
+      - REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY=/data
+    volumes:
+      - ./data:/data
+  nginx:
+    image: "nginx:1.9"
+    container_name: registry-nginx
+    environment:
+      - VIRTUAL_HOST=registry.breezemakes.com
+    links:
+      - registry:registry
+    volumes:
+      - ./nginx/:/etc/nginx/conf.d:ro
+  registry-ui:
+    image: konradkleine/docker-registry-frontend:v2
+    container_name: registry-hub
+    restart: always
+    environment:
+      - ENV_DOCKER_REGISTRY_HOST=registry
+      - ENV_DOCKER_REGISTRY_PORT=5000
+      - VIRTUAL_HOST=hub.breezemakes.com
+    links:
+      - registry
+networks:
+  default:
+    external: 
+      name: nginx-proxy-network
