@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  php:
+    image: drupal:8-apache
+    container_name: drupal-app
+    volumes:
+        - ./www/modules:/var/www/html/modules
+        - ./www/profiles:/var/www/html/profiles
+        - ./www/themes:/var/www/html/themes
+        - ./www/sites:/var/www/html/sites
+    links:
+      - mysql:mysql
+    environment:
+      - VIRTUAL_HOST=drupal.breezemakes.com
+  mysql:
+    image: mariadb
+    container_name: drupal-mysql
+    volumes:
+      - ./db:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: drupal
+      MYSQL_USER: root
+      MYSQL_PASSWORD: Mko0nji9
+      MYSQL_ROOT_PASSWORD: Mko0nji9
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: drupal-phpmyadmim
+    environment:
+      - PMA_ARBITRARY=1
+    ports:
+      - '8280:80'
+    links:
+      - mysql
+    environment:
+      - VIRTUAL_HOST=drupal-phpmyadmim.breezemakes.com
+networks:
+  default:
+    external: 
+      name: nginx-proxy-network
