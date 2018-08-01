@@ -1,5 +1,5 @@
-db/*
-modules/*
-sites/*
-themes/*
-
+db/**
+www/modules/**
+www/sites/**
+www/themes/**
+www/profiles/**
