@@ -1,16 +1,24 @@
 version: '3'
 services:
+  nginx:
+    image: nginx:latest
+    container_name: jenkins-nginx
+    volumes:
+      - ./nginx/site.conf:/etc/nginx/conf.d/site.conf
+    links:
+      - 'jenkins:jenkins'
+    environment:
+      - VIRTUAL_HOST=jenkins.breezemakes.com
   jenkins:
-    build: ./jenkins
+    image: jenkins
     container_name: jenkins
+    hostname: jenkins
     ports:
-      - '8088:8080'
+      - '8080:8080'
+      - '50000:50000'
     volumes:
       - ./home:/var/jenkins_home
       - ./log:/var/log/jenkins
-    environment:
-      - VIRTUAL_PORT=8080
-      - VIRTUAL_HOST=jenkins.breezemakes.com
 networks:
   default:
     external: 
