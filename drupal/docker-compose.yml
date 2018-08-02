@@ -7,6 +7,11 @@ services:
       - mysql
     links:
       - mysql:mysql
+    volumes:
+      - ./www/modules:/var/www/html/modules
+      - ./www/themes:/var/www/html/themes
+      - ./www/profiles:/var/www/html/profiles
+      - ./www/sites/default:/var/www/html/sites/default
     environment:
       - VIRTUAL_HOST=drupal.breezemakes.com
   mysql:
