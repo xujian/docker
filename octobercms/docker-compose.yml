@@ -3,20 +3,16 @@ services:
   nginx:
     image: nginx:latest
     container_name: october-nginx
-    depends_on:
-      - apache
     volumes:
       - ./nginx/site.conf:/etc/nginx/conf.d/site.conf
     links:
-      - 'apache:apache'
+      - apache
     environment:
       - VIRTUAL_HOST=october.breezemakes.com
   apache:
     image: dragontek/octobercms:7.1-apache
     container_name: october-apache
     hostname: apache
-    ports:
-      - 8881:8881
     depends_on:
       - mysql
       - memcached
@@ -35,7 +31,7 @@ services:
       - OCTOBER_DB_PASSWORD=Mko0nji9
       - OCTOBER_CACHE_DEFAULT=file
       - OCTOBER_SESSION_DRIVER=file
-      - VIRTUAL_HOST=october-apache.breezemakes.com
+      - HOSTNAME=apache
     volumes:
       - ./.env:/var/www/html/.env
       - ./config/docker:/var/www/html/config/docker
