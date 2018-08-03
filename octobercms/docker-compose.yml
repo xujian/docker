@@ -1,15 +1,41 @@
-version: '3.5'
+version: '3'
 services:
-  app:
-    image: "aspendigital/octobercms:php7.2-apache"
-    container_name: octobercms-app
-    restart: always
+  nginx:
+    image: nginx:latest
+    container_name: october-nginx
+    depends_on:
+      - apache
+    volumes:
+      - ./nginx/site.conf:/etc/nginx/conf.d/site.conf
+    links:
+      - 'apache:apache'
+    environment:
+      - VIRTUAL_HOST=october.breezemakes.com
+  apache:
+    image: dragontek/octobercms:7.1-apache
+    container_name: october-apache
+    hostname: apache
     ports:
-     - "8090:8090"
+      - 8881:8881
     depends_on:
       - mysql
       - memcached
       - redis
+    links:
+      - mysql
+      - redis
+      - memcached
+    environment:
+      - GIT_HOSTS=gitlab.com
+      - GIT_THEMES=https://github.com/rangrage/oc-mdbLoaded-theme.git
+      - OCTOBER_CMS_ACTIVE_THEME=demo
+      - OCTOBER_PLUGINS=RainLab.Pages;RainLab.Blog;
+      - OCTOBER_DB_DRIVER=mysql
+      - OCTOBER_DB_HOST=mysql
+      - OCTOBER_DB_PASSWORD=Mko0nji9
+      - OCTOBER_CACHE_DEFAULT=file
+      - OCTOBER_SESSION_DRIVER=file
+      - VIRTUAL_HOST=october-apache.breezemakes.com
     volumes:
       - ./.env:/var/www/html/.env
       - ./config/docker:/var/www/html/config/docker
@@ -17,18 +43,10 @@ services:
       - ./storage/app:/var/www/html/storage/app
       - ./storage/logs:/var/www/html/storage/logs
       - ./themes:/var/www/html/themes
-    environment:
-      - APP_URL=https://october.breezemakes.com
-      - DB_TYPE=mysql
-      - DB_HOST=mysql
-      - DB_DATABASE=october
-      - DB_USERNAME=root
-      - DB_PASSWORD=Mko0nji9
-      - TZ=China/Shanghai
-      - VIRTUAL_HOST=october.breezemakes.com
+      - ~/.ssh/id_rsa:/root/.ssh/id_rsa
   mysql:
     image: "mariadb"
-    container_name: octobercms-mysql
+    container_name: october-mysql
     ports:
       - 3306:3306
     environment:
@@ -38,10 +56,10 @@ services:
       - ./db:/var/lib/mysql
   memcached:
     image: "memcached"
-    container_name: octobercms-memcached
+    container_name: october-memcached
   redis:
     image: "redis"
-    container_name: octobercms-redis
+    container_name: october-redis
 networks:
   default:
     external: 
