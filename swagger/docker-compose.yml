@@ -1,0 +1,30 @@
+version: '2'
+services:
+  swagger-ui:
+    image: swaggerapi/swagger-ui:latest
+    ports: 
+      - 8080:8080
+    hostname: swagger-ui
+    container_name: swagger-ui
+    volumes:
+      - ./swagger.json:/app/swagger/swagger.json
+  swagger-editor:
+    image: swaggerapi/swagger-editor:latest
+    hostname: swagger-editor
+    container_name: swagger-editor
+    ports:
+        - "8081:8080"
+  nginx:
+    image: nginx:latest
+    container_name: swagger-nginx
+    volumes:
+      - ./nginx/site.conf:/etc/nginx/conf.d/site.conf
+    links:
+      - swagger-ui
+      - swagger-editor
+    environment:
+      - VIRTUAL_HOST=swagger-ui.breezemakes.com,swagger-editor.breezemakes.com
+networks:
+  default:
+    external: 
+      name: nginx-proxy-network
