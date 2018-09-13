@@ -1,0 +1,16 @@
+version: '2'
+services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx-steam
+    privileged: false
+    restart : always
+    volumes:
+      - ./app:/var/www
+      - ./site.conf:/etc/nginx/conf.d/site.conf
+    environment:
+      - VIRTUAL_HOST=steam.breezemakes.com
+networks:
+  default:
+    external: 
+      name: nginx-proxy-network
