@@ -1,0 +1,36 @@
+version: "3"
+services:
+  app:
+    image: node:8
+    container_name: sched-app
+    working_dir: /var/www/app
+    volumes:
+      - ./app:/var/www/app
+    environment:
+      - NODE_ENV=dev
+    ports:
+      - "3000:3030"
+    links:
+      - mongo
+    command: "npm start"
+  mongo:
+    container_name: sched-mongo
+    image: mongo
+    volumes:
+      - ./db:/data/db
+    ports:
+      - "27017:27017"
+    command: ["--bind_ip_all"]
+  nginx:
+    image: nginx:latest
+    container_name: sched-nginx
+    volumes:
+      - ./nginx/site.conf:/etc/nginx/conf.d/site.conf
+    links:
+      - app
+    environment:
+      - VIRTUAL_HOST=sched.breezemakes.com
+networks:
+  default:
+    external: 
+      name: nginx-proxy-network
