@@ -30,6 +30,22 @@ services:
       - app
     environment:
       - VIRTUAL_HOST=sched.breezemakes.com
+  admin:
+    image: mongo-express
+    container_name: sched-mongo-express
+    ports:
+      - "8089:8081"
+    links:
+      - mongo:mongo
+  nginx2:
+    image: nginx:latest
+    container_name: sched-mongo-express-nginx
+    volumes:
+      - ./nginx/admin.conf:/etc/nginx/conf.d/site.conf
+    links:
+      - admin
+    environment:
+      - VIRTUAL_HOST=sched-mongo-express.breezemakes.com
 networks:
   default:
     external: 
