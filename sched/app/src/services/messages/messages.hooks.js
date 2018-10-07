@@ -1,6 +1,7 @@
 
 
 const processMessage = require('../../hooks/process-message');
+const engine = require('./messages.engine');
 
 module.exports = {
   before: {
@@ -8,16 +9,33 @@ module.exports = {
     find: [],
     get: [],
     create: [
-      // processMessage(),
+      processMessage(),
       context => {
         // 将done指令发送到app端
         let d = context.data
         if (d.type === 'done') {
           let connection = context.params.connection
-          console.log('message hook before create ++++++++++++++++++', 
-            connection.payload)
           d.params.sn = connection.payload.sn
           context.service.emit('done', d.params)
+          let next = engine.afterDone(d)
+          console.log('message hooks before create-----------%%%%%%%%%%%%%', next)
+          if (next) {
+            context.app.service('command').emit(next.type, next.params)
+          }
+        }
+        if (d.type === 'on-position') {
+          let next = engine.afterPosition(d)
+          console.log('message hooks before create-----------%%%%%%%%%%%%%', next)
+          if (next) {
+            context.app.service('command').emit(next.type, next.params)
+          }
+        }
+        if (d.type === 'on-stage') {
+          let next = engine.afterStage(d)
+          console.log('message hooks before create-----------%%%%%%%%%%%%%', next)
+          if (next) {
+            context.app.service('command').emit(next.type, next.params)
+          }
         }
         if (d.type === 'checkin') {
           // bind sn to task
