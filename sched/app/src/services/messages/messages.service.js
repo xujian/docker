@@ -9,7 +9,8 @@ module.exports = function (app) {
 
   const options = {
     Model,
-    paginate
+    paginate,
+    events: ['done', 'goto-ok']
   };
 
   // Initialize our service with any options it requires
@@ -17,6 +18,11 @@ module.exports = function (app) {
 
   // Get our initialized service so that we can register hooks
   const service = app.service('messages');
-
+  service.publish('done', 'goto-ok', () => {
+      app.channel('admin')
+      // app.channel('apps'),
+      // app.channel('authenticated')
+  })
+  service.publish('created', 'goto-ok', () => [])
   service.hooks(hooks);
 };

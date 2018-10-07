@@ -14,7 +14,7 @@ module.exports = function(app) {
     // real-time connection, e.g. when logging in via REST
     if(connection) {
       // Obtain the logged in user from the connection
-      // const user = connection.user;
+      const user = connection.user;
       
       // The connection is no longer anonymous, remove it
       app.channel('anonymous').leave(connection);
@@ -25,7 +25,16 @@ module.exports = function(app) {
       // Channels can be named anything and joined on any condition 
       
       // E.g. to send real-time events only to admins use
-      // if(user.isAdmin) { app.channel('admins').join(connection); }
+      console.log('channels ----------------------user:', user.payload, authResult)
+      if(user.role === 'admin') { 
+        app.channel('admin').join(connection); 
+      }
+      if(user.role === 'machine') { 
+        app.channel('machine').join(connection); 
+      }
+      if(user.role === 'app') { 
+        app.channel('app').join(connection); 
+      }
 
       // If the user has joined e.g. chat rooms
       // if(Array.isArray(user.rooms)) user.rooms.forEach(room => app.channel(`rooms/${room.id}`).join(channel));
@@ -48,7 +57,7 @@ module.exports = function(app) {
   // Here you can also add service specific event publishers
   // e.g. the publish the `users` service `created` event to the `admins` channel
   app.service('users').publish('created', () => app.channel('admins'))
-  
+
   // With the userid and email organization from above you can easily select involved users
   // app.service('messages').publish(() => {
   //   return [

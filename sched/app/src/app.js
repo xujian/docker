@@ -43,7 +43,18 @@ app.configure(channels);
 // Configure a middleware for 404s and the error handler
 app.use(express.notFound());
 app.use(express.errorHandler({ logger }));
-
 app.hooks(appHooks);
 
+// → APP 指令系统
+/*app.publish('goto', (data, context) => {
+	return app.channel('authenticated')
+})
+// APP → 回传指令系统
+app.publish('done', (data, context) => {
+	return app.channel('authenticated')
+})
+app.publish((data, context) => {
+  return app.channel('authenticated');
+});
+*/
 module.exports = app;

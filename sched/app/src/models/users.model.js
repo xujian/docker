@@ -12,8 +12,8 @@ module.exports = function (app) {
     password: {
     	type: String
     },
-    isAdmin: { 
-    	type: Boolean
+    role: { 
+    	type: String
     }
   }, {
     timestamps: true
