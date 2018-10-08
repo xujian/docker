@@ -21,7 +21,8 @@ module.exports = function (app) {
       // app.channel('admin'),
       // app.channel('authenticated')
       app.channel(app.channels).filter(connection => {
-        return connection.user.role === 'app' && 
+        return connection.user &&
+          connection.user.role === 'app' && 
           connection.payload.sn === '100000000088'
       })
     ]

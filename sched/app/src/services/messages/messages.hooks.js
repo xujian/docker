@@ -30,12 +30,9 @@ module.exports = {
             context.app.service('command').emit(next.type, next.params)
           }
         }
-        if (d.type === 'on-stage') {
-          let next = engine.afterStage(d)
-          console.log('message hooks before create-----------%%%%%%%%%%%%%', next)
-          if (next) {
-            context.app.service('command').emit(next.type, next.params)
-          }
+        // 直接将goto分发给app
+        if (d.type === 'goto') {
+          context.app.service('command').emit(d.type, d.params)
         }
         if (d.type === 'checkin') {
           // bind sn to task

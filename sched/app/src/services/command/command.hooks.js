@@ -11,7 +11,7 @@ module.exports = {
         let d = context.data
         console.log('command before create --------------------------------', d)
         if (d.name === 'goto') {
-          context.service.emit('goto', d.data)
+          context.service.emit('goto', d.params)
           // context.app.emit(d.name, d.data) // not work 发不出去
         }
       }
