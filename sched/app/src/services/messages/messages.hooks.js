@@ -35,7 +35,7 @@ module.exports = {
           context.app.service('command').emit(d.type, d.params)
         }
         if (d.type === 'checkin') {
-          // bind sn to task
+          // bind sn to task 给connection染色 加上sn
           context.params.connection.payload.sn = d.params.sn
         }
       }
