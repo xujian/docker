@@ -11,9 +11,12 @@ module.exports = function (app) {
     Model,
     paginate,
     events: [
-      'done', // machine => server
-      'on-stage', // app => server
-      'command' // machine => server
+      'done',
+      'ready',
+      'goto',
+      'checkin',
+      'hello',
+      'checkout'
     ]
   };
 
@@ -22,10 +25,18 @@ module.exports = function (app) {
 
   // Get our initialized service so that we can register hooks
   const service = app.service('messages');
-  service.publish('done', 'on-stage', () => [
-      // app.channel('admin')
-      // app.channel('apps'),
-      // app.channel('authenticated')
+  service.publish('done', 'ready', () => [ // app -> server -> machine
+    app.channel('admin'),
+    app.channel('machine')
+    // app.channel('apps'),
+    // app.channel('authenticated')
+  ])
+  service.publish('hello', () => [ // machine -> server -> app
+    app.channel('admin'),
+    app.channel('app')
+  ])
+  service.publish('checkout', () => [ // machine -> server
+    app.channel('admin')
   ])
   service.publish('created', () => [])
   service.hooks(hooks);

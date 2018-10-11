@@ -1,8 +1,8 @@
-const hooks = require('./command.hooks');
+const hooks = require('./commands.hooks');
 
 class CommandService {
   constructor() {
-    this.events = ['goto', 'scan', 'draw', 'photo'];
+    this.events = ['goto'];
   }
   create (data, params) {
     // this.app.emit(params.name, params.data)
@@ -14,23 +14,20 @@ class CommandService {
 }
 
 module.exports = function (app) {
-  app.use('/command', new CommandService());
-  let service = app.service('command')
+  app.use('/commands', new CommandService());
+  let service = app.service('commands')
+
+  // channel 分发路径
   service.publish('goto', (data, context) => {
     return [
       // app.channel('admin'),
       // app.channel('authenticated')
+      // 仅分发给指定sn的手机
       app.channel(app.channels).filter(connection => {
         return connection.user &&
           connection.user.role === 'app' && 
           connection.payload.sn === '100000000088'
       })
-    ]
-  })
-  service.publish('scan', 'draw', 'photo', (data, context) => {
-    return [
-      app.channel('admin'),
-      app.channel('machine')
     ]
   })
   service.hooks(hooks);
