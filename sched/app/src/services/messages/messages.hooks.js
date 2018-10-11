@@ -20,7 +20,11 @@ module.exports = {
           context.params.connection.payload.sn = d.params.sn
         }
         if (d.type === 'goto') {
-          commands.emit('goto', d.params)
+          commands.emit(d.type, d.params)
+        }
+        if (d.type === 'hello') {
+          console.log('HELLO//////////////////////////////////////', d.params)
+          messages.emit('hello', d.params)
         }
         if (d.type === 'done' || d.type === 'ready') {
           let connection = context.params.connection
@@ -32,6 +36,9 @@ module.exports = {
           if (next) {
             commands.emit(next.type, next.params)
           }
+        }
+        if (d.type === 'checkout') {
+          console.log('HELLO//////////////////////////////////////', d.params)
         }
       }
     ],
