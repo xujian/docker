@@ -1,0 +1,107 @@
+version: '3'
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    volumes:
+      - ./ollama-data:/root/.ollama
+    ports:
+      - "11434:11434"
+    restart: unless-stopped
+    networks:
+      - ollama-network
+
+  # Pre-built Open WebUI image (default)
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    volumes:
+      - ./open-webui-data:/app/backend/data
+    ports:
+      - "11435:8080"
+    environment:
+      - OLLAMA_API_BASE_URL=http://ollama:11434
+      - WEBUI_AUTH=false # Set to true to enable authentication
+    depends_on:
+      - ollama
+    restart: unless-stopped
+    networks:
+      - ollama-network
+    # Comment out the above configuration and uncomment the below to use your own code base
+
+  # Custom Open WebUI from local code
+  # open-webui-dev:
+  #   build:
+  #     context: ./path/to/your/open-webui-code
+  #     dockerfile: Dockerfile
+  #   container_name: open-webui-dev
+  #   volumes:
+  #     - ./path/to/your/open-webui-code:/app
+  #     - ./open-webui-data:/app/backend/data
+  #     - /app/node_modules
+  #   ports:
+  #     - "11436:8080"
+  #   environment:
+  #     - OLLAMA_API_BASE_URL=http://ollama:11434
+  #     - WEBUI_AUTH=false
+  #   depends_on:
+  #     - ollama
+  #   restart: unless-stopped
+  #   networks:
+  #     - ollama-network
+
+  # Pre-built AnythingLLM image (default)
+  anythingllm:
+    image: ghcr.io/mintplexlabs/anythingllm:latest
+    container_name: anythingllm
+    volumes:
+      - ./anythingllm-data:/app/server/storage
+    ports:
+      - "11437:3001"
+    environment:
+      - OLLAMA_URL=http://ollama:11434
+      - OLLAMA_API_KEY=
+      - LLM_PROVIDER=ollama
+      - VECTOR_DB=chroma
+      - ENABLE_OLLAMA_ENDPOINT=true
+      - UID=1000
+      - GID=1000
+    depends_on:
+      - ollama
+    restart: unless-stopped
+    networks:
+      - ollama-network
+    # Comment out the above configuration and uncomment the below to use your own code base
+
+  # Custom AnythingLLM from local code
+  # anythingllm-dev:
+  #   build:
+  #     context: ./path/to/your/anythingllm-code
+  #     dockerfile: docker/Dockerfile
+  #   container_name: anythingllm-dev
+  #   volumes:
+  #     - ./path/to/your/anythingllm-code:/app
+  #     - ./anythingllm-data:/app/server/storage
+  #     - /app/frontend/node_modules
+  #     - /app/server/node_modules
+  #   ports:
+  #     - "11438:3001"
+  #   environment:
+  #     - OLLAMA_URL=http://ollama:11434
+  #     - OLLAMA_API_KEY=
+  #     - LLM_PROVIDER=ollama
+  #     - VECTOR_DB=chroma
+  #     - ENABLE_OLLAMA_ENDPOINT=true
+  #     - UID=1000
+  #     - GID=1000
+  #     - NODE_ENV=development
+  #   depends_on:
+  #     - ollama
+  #   restart: unless-stopped
+  #   networks:
+  #     - ollama-network
+
+networks:
+  ollama-network:
+    driver: bridge 
